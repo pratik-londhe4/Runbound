@@ -7,6 +7,10 @@ export type ErrorCallback = (error: Error) => void;
 /**
  * GPS Tracking Service
  * Handles location tracking for running sessions
+ * 
+ * Note: This is a singleton service. Only one tracking session
+ * can be active at a time. Attempting to start tracking while
+ * already active will log a warning and be ignored.
  */
 class GPSService {
   private watchId: number | null = null;

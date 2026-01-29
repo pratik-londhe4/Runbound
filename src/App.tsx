@@ -4,9 +4,10 @@ import MapboxGL from '@rnmapbox/maps';
 import MainScreen from './screens/MainScreen';
 
 // Set your Mapbox access token here
-// In production, this should come from environment variables
+// IMPORTANT: In production, this MUST come from environment variables
+// Never commit actual tokens to source control
 MapboxGL.setAccessToken(
-  process.env.MAPBOX_ACCESS_TOKEN || 'pk.YOUR_MAPBOX_TOKEN_HERE',
+  process.env.MAPBOX_ACCESS_TOKEN || '',
 );
 
 const App = () => {

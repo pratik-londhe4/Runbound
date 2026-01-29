@@ -68,7 +68,7 @@ const MapView: React.FC<MapViewProps> = ({
           centerCoordinate={
             currentLocation
               ? [currentLocation.longitude, currentLocation.latitude]
-              : [-122.4, 37.8]
+              : [-122.4, 37.8] // Default: San Francisco (fallback when location unavailable)
           }
         />
 

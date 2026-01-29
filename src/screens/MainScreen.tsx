@@ -77,24 +77,7 @@ const MainScreen = () => {
     );
   }, []);
 
-  const handleStopRun = useCallback(() => {
-    GPSService.stopTracking();
-    setIsRunning(false);
-
-    if (currentSession && currentSession.coordinates.length > 0) {
-      const updatedSession = {
-        ...currentSession,
-        endTime: Date.now(),
-        isActive: false,
-      };
-      setCurrentSession(updatedSession);
-
-      // Check if territory can be claimed
-      checkAndClaimTerritory(updatedSession.coordinates);
-    }
-  }, [currentSession, territories]);
-
-  const checkAndClaimTerritory = (coordinates: Coordinate[]) => {
+  const checkAndClaimTerritory = useCallback((coordinates: Coordinate[]) => {
     // Validate the territory
     const validation = validateTerritory(coordinates, territories, DEFAULT_CONFIG);
 
@@ -128,7 +111,24 @@ const MainScreen = () => {
         ],
       );
     }
-  };
+  }, [territories]);
+
+  const handleStopRun = useCallback(() => {
+    GPSService.stopTracking();
+    setIsRunning(false);
+
+    if (currentSession && currentSession.coordinates.length > 0) {
+      const updatedSession = {
+        ...currentSession,
+        endTime: Date.now(),
+        isActive: false,
+      };
+      setCurrentSession(updatedSession);
+
+      // Check if territory can be claimed
+      checkAndClaimTerritory(updatedSession.coordinates);
+    }
+  }, [currentSession, checkAndClaimTerritory]);
 
   // Calculate stats for current session
   const distance =

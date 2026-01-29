@@ -62,17 +62,19 @@ export function createPolygon(coordinates: Coordinate[]): GeoJSON.Polygon | null
 
   try {
     // Convert coordinates to GeoJSON format [longitude, latitude]
+    // Create a copy to avoid mutating the input array
     const points = coordinates.map(coord => [coord.longitude, coord.latitude]);
     
     // Close the polygon if not already closed
     const firstPoint = points[0];
     const lastPoint = points[points.length - 1];
-    if (firstPoint[0] !== lastPoint[0] || firstPoint[1] !== lastPoint[1]) {
-      points.push(firstPoint);
-    }
+    const polygonPoints = 
+      firstPoint[0] !== lastPoint[0] || firstPoint[1] !== lastPoint[1]
+        ? [...points, firstPoint]
+        : points;
 
     // Create polygon
-    const polygon = turf.polygon([points]);
+    const polygon = turf.polygon([polygonPoints]);
     return polygon.geometry;
   } catch (error) {
     console.error('Error creating polygon:', error);
@@ -173,6 +175,20 @@ export function validateTerritory(
   existingTerritories: Territory[] = [],
   config: TerritoryConfig = DEFAULT_CONFIG,
 ): ValidationResult {
+  // Validate config parameters
+  if (
+    config.minDistance <= 0 ||
+    config.minArea <= 0 ||
+    config.closureThreshold <= 0 ||
+    config.maxSpeed <= 0 ||
+    config.minAccuracy <= 0
+  ) {
+    return {
+      isValid: false,
+      reasons: ['Invalid configuration: all values must be positive'],
+    };
+  }
+
   const reasons: string[] = [];
 
   // Check minimum number of points
@@ -255,7 +271,7 @@ export function createTerritory(
   const distance = calculateTotalDistance(coordinates);
 
   return {
-    id: `territory_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    id: `territory_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
     coordinates,
     polygon,
     area,

@@ -179,6 +179,25 @@ describe('Territory Service', () => {
   });
 
   describe('validateTerritory', () => {
+    it('should fail for invalid config values', () => {
+      const validLoop: Coordinate[] = [
+        {latitude: 37.7749, longitude: -122.4194, timestamp: 1000, accuracy: 10},
+        {latitude: 37.7760, longitude: -122.4194, timestamp: 2000, accuracy: 10},
+        {latitude: 37.7760, longitude: -122.4210, timestamp: 3000, accuracy: 10},
+        {latitude: 37.7749, longitude: -122.4210, timestamp: 4000, accuracy: 10},
+        {latitude: 37.7749, longitude: -122.4195, timestamp: 5000, accuracy: 10},
+      ];
+      
+      const invalidConfig = {
+        ...DEFAULT_CONFIG,
+        minDistance: -100, // Negative value
+      };
+      
+      const result = validateTerritory(validLoop, [], invalidConfig);
+      expect(result.isValid).toBe(false);
+      expect(result.reasons).toContain('Invalid configuration: all values must be positive');
+    });
+
     it('should fail for insufficient coordinates', () => {
       const result = validateTerritory([mockCoordinate1, mockCoordinate2]);
       expect(result.isValid).toBe(false);
